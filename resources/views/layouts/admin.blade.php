@@ -7,35 +7,25 @@
 
 <body class="bg-[#121415] font-sans">
     <div class="flex">
-        <aside class="flex flex-col w-80 min-h-screen bg-[#1E2021] text-white px-3 pt-8 pb-12">
-            <h1>
-                Compedia
-            </h1>
-            <div class="flex flex-col">
-                <button>
-                    <a href="">
-                        Dashboard
-                    </a>
-                </button>
-                <button>
-                    <a href="">
-                        Competitions
-                    </a>
-                </button>
+        <x-sidebar></x-sidebar>
+        <main class="flex flex-col px-16 py-8 overflow-y-auto gap-12 w-full">
+            <div class="flex items-center justify-between">
+                <h1 class="text-3xl font-semibold text-[#DEB8FF]">
+                    @yield('title')
+                </h1>
+                <div class="flex items-center gap-5">
+                    <div class="relative">
+                        <input
+                            type="text"
+                            placeholder="Search competition . . ."
+                            class="bg-transparent border border-white/10 rounded-xl px-4 py-2 text-sm outline-none focus:border-[#A855F7] text-white placeholder:text-white/50"
+                        >
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-white"></div>
+                </div>
             </div>
-            <div>
-                <button>
-                    <a href="">
-                        Logout
-                    </a>
-                </button>
-            </div>
-        </aside>
-
-        <main class="flex flex-col gap-12 px-16 py-8">
             @yield('content')
         </main>
-
     </div>
 </body>
 </html>
