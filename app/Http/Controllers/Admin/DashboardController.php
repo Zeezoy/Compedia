@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 
-class DashboardController extends Controller
-{
-    public function index()
-    {
-        $competitions = include resource_path(
-            'data/competitions.php'
+class DashboardController extends Controller {
+    public function index() {
+        $competitions = array_slice(
+            require resource_path('data/competitions.php'),
+            0,
+            3
         );
 
         return view(

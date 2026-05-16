@@ -1,14 +1,21 @@
 @extends('layouts.admin')
-@section('title', 'Admin Dashboard')
 @section('content')
 
+<div class="flex justify-between">
+    <h1 class="text-3xl font-semibold text-[#DEB8FF]">Manage Competitions</h1>
+    <x-button href="{{ route('competitions.create') }}">
+        <x-bx-plus class="w-6 h-6"/>    
+        New Competition
+    </x-button>
+</div>
+
 <div class="flex gap-11">
-     <x-stat-card
-        title="Total Users"
+    <x-stat-card
+        title="Active Now"
         value="12"
-        growth="+8.5% from last month"
+        growth=""
     >
-        <x-bx-user-plus class="w-10 h-10"/>
+        <x-bx-pulse class="w-10 h-10"/>
     </x-stat-card>
     <x-stat-card
         title="Total Competitions"
@@ -17,22 +24,37 @@
     >
         <x-bx-bullseye class="w-10 h-10"/>
     </x-stat-card>
+    <x-stat-card
+        title="Up Coming"
+        value="12"
+        growth=""
+    >
+        <x-bx-calendar-event class="w-10 h-10"/>
+    </x-stat-card>
 </div>
 
 <div>
-    <x-chart
-        title="Competition Trend"
-        description="Total Competitions / month"
-        chartId="competitionTrendChart"
-        type="bar"
-        datasetLabel="Competitions"
-        :labels="['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']"
-        :data="[10, 20, 15, 25, 30, 40]"
-    />
-</div>
-
-<div>
-    <x-table title="Review Competitions" action="View All">
+    <x-table>
+        <form method="GET">
+            <div class="flex justify-end items-center gap-4 mb-6">
+                <x-dropdown-filter
+                    name="category"
+                    placeholder="All Categories"
+                    :options="$categories"
+                    :selected="request('category')"
+                />
+                <x-dropdown-filter
+                    name="status"
+                    placeholder="All Status"
+                    :options="[
+                        'All',
+                        'Active',
+                        'Closed'
+                    ]"
+                    :selected="request('status')"
+                />
+            </div>
+        </form>
         <thead>
             <tr class="text-left text-sm text-[#D9D9D9] border-b border-white/10">
                 <th class="pb-3">Title</th>
@@ -69,7 +91,7 @@
                     </span>
                 </td>
                 <td class="py-4 flex items-center">
-                    <a href="" class="text-[#DEB8FF]">
+                    <a href="/admin/competitions/{{ $competition['id'] }}/edit" class="text-[#DEB8FF]">
                         <x-bx-pencil class="w-6 h-6"/>
                     </a>
                     <a href="" class="ml-4 text-[#DEB8FF]">
@@ -80,6 +102,8 @@
             @endforeach
         </tbody>
     </x-table>
+
+    <x-pagination :data="$competitions" />
 </div>
 
 @endsection

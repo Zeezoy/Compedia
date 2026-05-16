@@ -3,17 +3,28 @@
 return [
 
     [
-        'title' => 'Competition 1',
-        'category' => 'Mobile Dev',
-        'deadline' => 'Oct 12, 2025',
-        'status' => 'Active',
-    ],
+        'id' => 1,
+        'title' => 'Hology 8.0',
+        'category' => 'Web Dev',
+        'organizer' => 'FILKOM UB',
+        'description' => 'Lorem ipsum...',
+        'deadline' => '2026-10-12',
 
-    [
-        'title' => 'Competition 2',
-        'category' => 'UI/UX',
-        'deadline' => 'Nov 1, 2025',
-        'status' => 'Closed',
+        'rules' => [
+            'All participants must be students',
+            'Original work only',
+        ],
+
+        'prizes' => [
+            [
+                'title' => '1st Place',
+                'amount' => 25000,
+            ],
+            [
+                'title' => '2nd Place',
+                'amount' => 15000,
+            ],
+        ],
     ],
 
 ];
