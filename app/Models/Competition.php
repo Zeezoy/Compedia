@@ -29,7 +29,7 @@ class Competition extends Model
     public function getDaysLeftAttribute()
     {
         return max(
-            0,
+            0, (int)
             now()->diffInDays($this->deadline, false)
         );
     }
