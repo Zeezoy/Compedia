@@ -11,22 +11,52 @@
 <body class="bg-[#16111B] text-[#EADFED] min-h-screen font-[Inter]">
 <header class="h-[78px] border-b border-white/10 bg-[#16111B] flex items-center px-6 md:px-8 lg:sticky lg:top-0 lg:z-50">
     <div class="w-full flex items-center justify-between">
-        <div class="flex items-center gap-3">
+        <a href="/" class="flex items-center gap-3">
             <svg class="w-6 h-6 text-[#DEB8FF]" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M7 3h10v3h4v2.5A5.5 5.5 0 0 1 15.5 14H15v2h3v2H6v-2h3v-2h-.5A5.5 5.5 0 0 1 3 8.5V6h4V3Zm2 2v5a3 3 0 0 0 6 0V5H9ZM5 8v.5A3.5 3.5 0 0 0 8.5 12h.1A5.4 5.4 0 0 1 7 8V8H5Zm12 0a5.4 5.4 0 0 1-1.6 4h.1A3.5 3.5 0 0 0 19 8.5V8h-2Zm-6 6v2h2v-2h-2Z"/>
             </svg>
             <h1 class="text-3xl font-extrabold text-[#EADFED]">Compedia</h1>
-        </div>
+</a>
 
         <nav class="hidden md:flex items-center gap-14 text-sm">
-            <a href="#" class="text-[#CFC2D6]">Discover</a>
+            <a href="/" class="text-[#CFC2D6]">Discover</a>
             <a href="{{ route('public.competitions.index') }}" class="text-[#DEB8FF] border-b-2 border-[#DEB8FF] pb-2">Competitions</a>
-            <a href="#" class="text-[#CFC2D6]">Resources</a>
         </nav>
 
-        <button class="bg-[#9747FF] px-6 md:px-7 py-3 rounded-xl text-sm font-bold text-[#400071]">
-            Sign In
-        </button>
+   @auth
+    <div class="flex items-center gap-4">
+        <a href="{{ route('profile') }}" class="w-11 h-11 rounded-full overflow-hidden bg-[#9747FF] flex items-center justify-center">
+            @if(Auth::user()->avatar_url)
+                <img 
+                    src="{{ Storage::url(Auth::user()->avatar_url) }}" 
+                    alt="Profile"
+                    class="w-full h-full object-cover"
+                >
+            @else
+                <span class="text-white font-extrabold">
+                    {{ strtoupper(substr(Auth::user()->full_name ?? Auth::user()->name ?? 'U', 0, 1)) }}
+                </span>
+            @endif
+        </a>
+
+        <span class="hidden md:block text-[#CFC2D6]">
+            {{ Auth::user()->username ?? Auth::user()->full_name }}
+        </span>
+
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" class="text-[#CFC2D6] hover:text-[#EADFED]">
+                Logout
+            </button>
+        </form>
+    </div>
+@endauth
+
+@guest
+    <a href="{{ route('login') }}" class="bg-[#9747FF] px-6 md:px-7 py-3 rounded-xl text-sm font-bold text-[#400071]">
+        Sign In
+    </a>
+@endguest
     </div>
 </header>
 
@@ -61,7 +91,7 @@
                 </h2>
 
                 <p class="mt-5 max-w-[560px] text-[#CFC2D6] leading-relaxed">
-                    {{ $competition['description'] }}
+                    {{ $competition->description }}
                 </p>
             </div>
 
@@ -98,7 +128,7 @@
                     Overview
                 </h3>
                 <p class="text-[#EADFED] leading-relaxed">
-                    {{ $competition['description'] }}
+                    {{ $competition->description }}
                 </p>
                 <p class="text-[#EADFED] leading-relaxed mt-6">
                     This competition is designed for participants to challenge themselves, build strong projects, and showcase their skills through creative problem solving.
@@ -117,15 +147,21 @@
                 </h3>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    @foreach ($competition['rules'] as $rule)
-                        <div class="flex gap-4 text-[#EADFED]">
-                            <svg class="w-5 h-5 mt-1 text-[#DEB8FF] shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                <circle cx="12" cy="12" r="9"/>
-                                <path d="M8 12l3 3 5-6"/>
-                            </svg>
-                            <p>{{ $rule }}</p>
-                        </div>
-                    @endforeach
+                    <div class="flex gap-4 text-[#EADFED]">
+    <svg class="w-5 h-5 mt-1 text-[#DEB8FF] shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9"/>
+        <path d="M8 12l3 3 5-6"/>
+    </svg>
+    <p>Participants must follow the competition guidelines.</p>
+</div>
+
+<div class="flex gap-4 text-[#EADFED]">
+    <svg class="w-5 h-5 mt-1 text-[#DEB8FF] shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9"/>
+        <path d="M8 12l3 3 5-6"/>
+    </svg>
+    <p>All submissions must be original work.</p>
+</div>
                 </div>
             </div>
 
@@ -142,7 +178,7 @@
                     <div>
                         <span class="absolute -left-2 w-4 h-4 bg-[#39323D] rounded-full"></span>
                         <h4 class="text-2xl font-extrabold text-[#D9D9D9]">Registration Opens</h4>
-                        <p class="text-sm text-[#CFC2D6]">{{ \Carbon\Carbon::parse($competition['registration_open'] ?? now())->format('F d, Y') }}</p>
+                        <p class="text-sm text-[#CFC2D6]">{{ $competition->start_date ? \Carbon\Carbon::parse($competition->start_date)->format('F d, Y') : 'To be announced' }}</p>
                     </div>
 
                     <div>
@@ -209,7 +245,7 @@
                     Register for Competition
                 </button>
 
-                <a href="{{ $competition['guidebook_url'] ?? '#' }}"
+                <a href="{{ $competition->source_url ?? '#' }}"
    class="block text-center mt-5 w-full border border-[#DEB8FF]/40 py-4 rounded-xl font-extrabold">
     Download Guidebook
 </a>
@@ -221,13 +257,13 @@
 
             <div class="bg-white/[0.03] border-l-4 border-[#DEB8FF] border-y border-r border-white/10 rounded-xl p-6">
                 <p class="text-sm text-[#CFC2D6]">Registration Fee</p>
-                <p class="text-3xl font-extrabold text-[#D9D9D9]">{{ $competition['registration_fee'] ?? 'Free' }}</p>
+                <p class="text-3xl font-extrabold text-[#D9D9D9]"> Free </p>
             </div>
 
             <div class="bg-white/[0.03] border-l-4 border-[#FACC15] border-y border-r border-white/10 rounded-xl p-6">
                 <p class="text-sm text-[#CFC2D6]">Prize Pool</p>
                 <p class="text-3xl font-extrabold text-[#DEB8FF]">
-                    Rp{{ number_format($competition['prizes'][0]['amount'] ?? 0, 0, ',', '.') }}
+                    {{ $competition->prize ?? 'To be announced' }}
                 </p>
             </div>
 

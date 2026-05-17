@@ -109,6 +109,26 @@ public function publicIndex(Request $request) {
         });
     }
 
+    $competitions = $competitions->sortBy('deadline')->values();
+
+$perPage = 4;
+$currentPage = LengthAwarePaginator::resolveCurrentPage();
+
+$currentItems = $competitions
+    ->slice(($currentPage - 1) * $perPage, $perPage)
+    ->values();
+
+$competitions = new LengthAwarePaginator(
+    $currentItems,
+    $competitions->count(),
+    $perPage,
+    $currentPage,
+    [
+        'path' => request()->url(),
+        'query' => request()->query(),
+    ]
+);
+
     $categories = \App\Models\Category::pluck('name')->values();
 
     return view('user.competitions.index', [

@@ -39,9 +39,7 @@
                 <a href="/competitions" class="{{ request()->is('competitions*') ? 'text-purple-400 border-b border-purple-400 pb-1' : 'hover:text-purple-400 transition' }}">
                     Competitions
                 </a>
-                <a href="#" class="hover:text-purple-400 transition">
-                    Resources
-                </a>
+
             </div>
 
             {{-- Navbar Right --}}

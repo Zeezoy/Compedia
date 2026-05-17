@@ -11,22 +11,52 @@
 <body class="bg-[#16111B] text-[#EADFED] min-h-screen font-[Inter]">
 <header class="h-[78px] border-b border-white/10 bg-[#16111B] flex items-center px-6 md:px-8 lg:sticky lg:top-0 lg:z-50">
     <div class="w-full flex items-center justify-between">
-        <div class="flex items-center gap-3">
+        <a href="/" class="flex items-center gap-3">
             <svg class="w-6 h-6 text-[#DEB8FF]" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M7 3h10v3h4v2.5A5.5 5.5 0 0 1 15.5 14H15v2h3v2H6v-2h3v-2h-.5A5.5 5.5 0 0 1 3 8.5V6h4V3Zm2 2v5a3 3 0 0 0 6 0V5H9ZM5 8v.5A3.5 3.5 0 0 0 8.5 12h.1A5.4 5.4 0 0 1 7 8V8H5Zm12 0a5.4 5.4 0 0 1-1.6 4h.1A3.5 3.5 0 0 0 19 8.5V8h-2Zm-6 6v2h2v-2h-2Z"/>
             </svg>
             <h1 class="text-3xl font-extrabold text-[#EADFED]">Compedia</h1>
-        </div>
+        </a>
 
         <nav class="hidden md:flex items-center gap-14 text-sm">
-            <a href="#" class="text-[#CFC2D6]">Discover</a>
+            <a href="/" class="text-[#CFC2D6]">Discover</a>
             <a href="{{ route('public.competitions.index') }}" class="text-[#DEB8FF] border-b-2 border-[#DEB8FF] pb-2">Competitions</a>
-            <a href="#" class="text-[#CFC2D6]">Resources</a>
         </nav>
 
-        <button class="bg-[#9747FF] px-6 md:px-7 py-3 rounded-xl text-sm font-bold text-[#400071]">
-            Sign In
-        </button>
+    @auth
+    <div class="flex items-center gap-4">
+        <a href="{{ route('profile') }}" class="w-11 h-11 rounded-full overflow-hidden bg-[#9747FF] flex items-center justify-center">
+            @if(Auth::user()->avatar_url)
+                <img 
+                    src="{{ Storage::url(Auth::user()->avatar_url) }}" 
+                    alt="Profile"
+                    class="w-full h-full object-cover"
+                >
+            @else
+                <span class="text-white font-extrabold">
+                    {{ strtoupper(substr(Auth::user()->full_name ?? Auth::user()->name ?? 'U', 0, 1)) }}
+                </span>
+            @endif
+        </a>
+
+        <span class="hidden md:block text-[#CFC2D6]">
+            {{ Auth::user()->username ?? Auth::user()->full_name }}
+        </span>
+
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" class="text-[#CFC2D6] hover:text-[#EADFED]">
+                Logout
+            </button>
+        </form>
+    </div>
+@endauth
+
+@guest
+    <a href="{{ route('login') }}" class="bg-[#9747FF] px-6 md:px-7 py-3 rounded-xl text-sm font-bold text-[#400071]">
+        Sign In
+    </a>
+@endguest
     </div>
 </header>
 
@@ -177,7 +207,7 @@
                                     </p>
                                 </div>
 
-                                <a href="{{ route('public.competitions.show', $competition['id']) }}"
+                                <a href="{{ route('public.competitions.show', $competition->id) }}"
                                    class="bg-[#9747FF] hover:bg-[#8b35ff] transition w-[190px] text-center py-3 rounded-lg font-extrabold text-[#400071]">
                                     View Details
                                 </a>
@@ -187,15 +217,28 @@
                 @endforeach
             </div>
 
-            <div class="flex justify-center items-center gap-3 mt-12">
-                <button class="w-10 h-10 border border-[#424354] rounded-lg">‹</button>
-                <button class="w-10 h-10 bg-[#B76DFF] text-[#400071] font-bold rounded-lg">1</button>
-                <button class="w-10 h-10 border border-[#424354] rounded-lg">2</button>
-                <button class="w-10 h-10 border border-[#424354] rounded-lg">3</button>
-                <span>...</span>
-                <button class="w-10 h-10 border border-[#424354] rounded-lg">12</button>
-                <button class="w-10 h-10 border border-[#424354] rounded-lg">›</button>
-            </div>
+            @if ($competitions->hasPages())
+    <div class="flex justify-center items-center gap-3 mt-12">
+        @if ($competitions->onFirstPage())
+            <span class="w-10 h-10 border border-[#424354] rounded-lg flex items-center justify-center opacity-40">‹</span>
+        @else
+            <a href="{{ $competitions->previousPageUrl() }}" class="w-10 h-10 border border-[#424354] rounded-lg flex items-center justify-center">‹</a>
+        @endif
+
+        @foreach ($competitions->getUrlRange(1, $competitions->lastPage()) as $page => $url)
+            <a href="{{ $url }}"
+               class="w-10 h-10 rounded-lg flex items-center justify-center {{ $page == $competitions->currentPage() ? 'bg-[#B76DFF] text-[#400071] font-bold' : 'border border-[#424354]' }}">
+                {{ $page }}
+            </a>
+        @endforeach
+
+        @if ($competitions->hasMorePages())
+            <a href="{{ $competitions->nextPageUrl() }}" class="w-10 h-10 border border-[#424354] rounded-lg flex items-center justify-center">›</a>
+        @else
+            <span class="w-10 h-10 border border-[#424354] rounded-lg flex items-center justify-center opacity-40">›</span>
+        @endif
+    </div>
+@endif
         </div>
     </section>
 </main>

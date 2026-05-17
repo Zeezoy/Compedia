@@ -26,7 +26,7 @@
 
             <div class="flex flex-col sm:flex-row gap-4 mb-10">
 
-            <a href="{{ route('competitions') }}" class="bg-purple-600 hover:bg-purple-700 transition px-8 py-4 rounded-2xl font-semibold">
+            <a href="{{ route('public.competitions.index') }}" class="bg-purple-600 hover:bg-purple-700 transition px-8 py-4 rounded-2xl font-semibold">
                 Explore Now
             </a>
 
@@ -163,7 +163,7 @@
 
         </div>
 
-        <a href="{{ route('competitions') }}" class="border border-white/10 hover:border-purple-500 transition px-5 py-3 rounded-xl">
+        <a href="{{ route('public.competitions.index') }}" class="border border-white/10 hover:border-purple-500 transition px-5 py-3 rounded-xl">
             View All
         </a>
 
@@ -292,7 +292,7 @@
                 Discover competitions, hackathons, olympiads, and opportunities from one centralized platform.
             </p>
 
-            <a href="{{ route('competitions') }}" class="bg-black text-white hover:bg-black/80 transition px-8 py-4 rounded-2xl font-semibold">
+            <a href="{{ route('public.competitions.index') }}" class="bg-black text-white hover:bg-black/80 transition px-8 py-4 rounded-2xl font-semibold">
                 Explore Competitions
             </a>
 
