@@ -9,8 +9,11 @@ Route::get('/admin', [DashboardController::class, 'index'])->name('admin.dashboa
 Route::get('/admin/competitions', [CompetitionsController::class, 'index'])->name('competitions.index');
 Route::get('/admin/competitions/create', [CreateController::class, 'index'])->name('competitions.create');
 Route::get('/admin/competitions/{id}/edit', [CompetitionsController::class, 'edit'])->name('competitions.edit');
+Route::get('/competitions', [CompetitionsController::class, 'publicIndex'])->name('public.competitions.index');
+Route::get('/competitions/{id}', [CompetitionsController::class, 'show'])->name('public.competitions.show');
 Route::get('/', function () {
     return view('welcome');
+});
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;

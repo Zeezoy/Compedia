@@ -12,11 +12,10 @@ class CompetitionsController extends Controller {
             require resource_path('data/competitions.php')
         );
 
-        if ($request->category && $request->category !== 'All') {
-            $competitions =
-                $competitions->filter(function ($competition) use ($request) {
-                    return $competition['category'] === $request->category;
-                });
+        if ($request->categories) {
+            $competitions = $competitions->filter(function ($competition) use ($request) {
+                return in_array($competition['category'], $request->categories);
+            });
         }
 
         if ($request->status && $request->status !== 'All') {
@@ -78,5 +77,57 @@ class CompetitionsController extends Controller {
             'admin.competitions.edit',
             compact('competition')
         );
+    }
+
+    public function publicIndex(Request $request) {
+    $competitions = collect(
+        require resource_path('data/competitions.php')
+    );
+
+    if ($request->search) {
+        $search = strtolower($request->search);
+
+        $competitions = $competitions->filter(function ($competition) use ($search) {
+            return str_contains(strtolower($competition['title']), $search)
+                || str_contains(strtolower($competition['organizer']), $search)
+                || str_contains(strtolower($competition['category']), $search);
+        });
+    }
+
+    if ($request->categories) {
+        $competitions = $competitions->filter(function ($competition) use ($request) {
+            return in_array($competition['category'], $request->categories);
+        });
+    }
+
+   if ($request->prize) {
+    $competitions = $competitions->filter(function ($competition) use ($request) {
+        $topPrize = $competition['prizes'][0]['amount'] ?? 0;
+        return $topPrize >= (int) $request->prize;
+    });
+}
+
+$competitions = $competitions->sortBy('deadline')->values();
+
+$categories = collect(
+        require resource_path('data/competitions.php')
+    )->pluck('category')->unique()->values();
+
+    return view('user.competitions.index', [
+        'competitions' => $competitions,
+        'categories' => $categories,
+    ]);
+}
+
+    public function show($id) {
+        $competitions = require resource_path('data/competitions.php');
+
+        $competition = collect($competitions)->firstWhere('id', (int) $id);
+
+        if (!$competition) {
+            abort(404);
+        }
+
+        return view('user.competitions.show', compact('competition'));
     }
 }
