@@ -135,21 +135,21 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
                 @foreach ($competitions as $competition)
                     @php
-                        $daysLeft = max(0, (int) now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($competition['deadline'])->startOfDay(), false));
+                        $daysLeft = max(0, (int) now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($competition->deadline)->startOfDay(), false));
                         $isNearDeadline = $daysLeft <= 14;
                         $daysColor = $isNearDeadline ? 'text-[#FFBABA]' : 'text-[#CFC2D6]';
                     @endphp
 
                     <article class="bg-white/[0.03] border border-white/10 rounded-xl overflow-hidden min-h-[430px] flex flex-col">
                         <div class="relative h-[190px] bg-[#39323D]">
-                            @if(isset($competition['image']))
-                                <img src="{{ $competition['image'] }}" class="w-full h-full object-cover" alt="{{ $competition['title'] }}">
+                            @if(isset($competition->poster_url))
+                                <img src="{{ $competition->poster_url }}" class="w-full h-full object-cover" alt="{{ $competition->title }}">
                             @else
                                 <div class="w-full h-full bg-gradient-to-br from-[#391433] via-[#84301A] to-[#F97316]"></div>
                             @endif
 
                             <span class="absolute top-3 right-3 bg-[#39323D]/60 text-[#EADFED] text-[11px] font-extrabold tracking-wide px-3 py-1 rounded">
-                                {{ strtoupper($competition['category']) }}
+                                {{ strtoupper($competition->category->name) }}
                             </span>
                         </div>
 
@@ -157,10 +157,10 @@
                             <div class="flex justify-between gap-4">
                                 <div class="pr-4">
                                     <h3 class="text-2xl md:text-3xl font-extrabold leading-tight text-[#D9D9D9]">
-                                        {{ $competition['title'] }}
+                                        {{ $competition->title }}
                                     </h3>
                                     <p class="mt-2 text-[#CFC2D6]">
-                                        {{ $competition['organizer'] }}
+                                        {{ $competition->organizer }}
                                     </p>
                                 </div>
 
@@ -173,7 +173,7 @@
                                 <div>
                                     <p class="text-[11px] tracking-[0.18em] font-bold text-[#CFC2D6]">PRIZE POOL</p>
                                     <p class="text-[#DEB8FF]">
-                                        Rp{{ number_format($competition['prizes'][0]['amount'] ?? 100000, 0, ',', '.') }}
+                                        {{ $competition->prize }}
                                     </p>
                                 </div>
 

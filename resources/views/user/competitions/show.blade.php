@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $competition['title'] }}</title>
+    <title>{{ $competition->title }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
@@ -38,12 +38,12 @@
     </a>
 </div>
 @php
-    $daysLeft = max(0, (int) now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($competition['deadline'])->startOfDay(), false));
+    $daysLeft = max(0, (int) now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($competition->deadline)->startOfDay(), false));
 @endphp
 
 <section class="relative max-w-[1210px] mx-auto min-h-[330px] rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03]">
-        @if(isset($competition['image']))
-            <img src="{{ $competition['image'] }}" class="absolute inset-0 w-full h-full object-cover opacity-35">
+        @if(isset($competition->poster_url))
+            <img src="{{ $competition->poster_url }}" class="absolute inset-0 w-full h-full object-cover opacity-35">
         @else
             <div class="absolute inset-0 bg-gradient-to-br from-[#142033] via-[#16111B] to-[#0D0A11]"></div>
         @endif
@@ -53,11 +53,11 @@
         <div class="relative z-10 min-h-[330px] flex flex-col md:flex-row md:items-center justify-between gap-8 px-8 md:px-20 py-10">
             <div>
                 <span class="inline-block bg-[#39323D]/70 text-[#EADFED] text-xs font-extrabold px-3 py-1 rounded">
-                    {{ strtoupper($competition['category']) }}
+                    {{ strtoupper($competition->category->name) }}
                 </span>
 
                 <h2 class="mt-5 text-4xl md:text-5xl font-extrabold text-[#D9D9D9]">
-                    {{ $competition['title'] }}
+                    {{ $competition->title }}
                 </h2>
 
                 <p class="mt-5 max-w-[560px] text-[#CFC2D6] leading-relaxed">
@@ -148,13 +148,13 @@
                     <div>
                         <span class="absolute -left-2 w-4 h-4 bg-[#DEB8FF] rounded-full shadow-[0_0_18px_#DEB8FF]"></span>
                         <h4 class="text-2xl font-extrabold text-[#D9D9D9]">Registration Closes</h4>
-                        <p class="text-sm text-[#CFC2D6]">{{ \Carbon\Carbon::parse($competition['deadline'])->format('F d, Y') }}</p>
+                        <p class="text-sm text-[#CFC2D6]">{{ \Carbon\Carbon::parse($competition->deadline)->format('F d, Y') }}</p>
                     </div>
 
                     <div>
                         <span class="absolute -left-2 w-4 h-4 bg-[#39323D] rounded-full"></span>
                         <h4 class="text-2xl font-extrabold text-[#D9D9D9]">Competition Begins</h4>
-                        <p class="text-sm text-[#CFC2D6]">{{ \Carbon\Carbon::parse($competition['deadline'])->format('F d, Y') }} · 09:00 AM</p>
+                        <p class="text-sm text-[#CFC2D6]">{{ \Carbon\Carbon::parse($competition->deadline)->format('F d, Y') }} · 09:00 AM</p>
                     </div>
 
                     <div>
@@ -188,7 +188,7 @@
                     </div>
 
                     <div>
-                        <h4 class="text-3xl font-extrabold text-[#D9D9D9]">{{ $competition['organizer'] }}</h4>
+                        <h4 class="text-3xl font-extrabold text-[#D9D9D9]">{{ $competition->organizer }}</h4>
                         <p class="mt-2 text-[#EADFED] max-w-[650px]">
                             A leading institution dedicated to supporting innovation, competition, and student achievement.
                         </p>
@@ -234,7 +234,7 @@
             <div class="bg-white/[0.03] border-l-4 border-[#CFC2D6] border-y border-r border-white/10 rounded-xl p-6">
                 <p class="text-sm text-[#CFC2D6]">Deadline</p>
                 <p class="text-3xl font-extrabold text-[#D9D9D9]">
-                    {{ \Carbon\Carbon::parse($competition['deadline'])->format('M d, Y') }}
+                    {{ \Carbon\Carbon::parse($competition->deadline)->format('M d, Y') }}
                 </p>
             </div>
         </aside>

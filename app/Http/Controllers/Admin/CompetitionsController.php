@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Pagination\LengthAwarePaginator;
+use App\Models\Competition;
 
 class CompetitionsController extends Controller {
     public function index(Request $request) {
@@ -79,39 +80,36 @@ class CompetitionsController extends Controller {
         );
     }
 
-    public function publicIndex(Request $request) {
-    $competitions = collect(
-        require resource_path('data/competitions.php')
-    );
+public function publicIndex(Request $request) {
+    $competitions = Competition::with('category')
+        ->where('status', 'aktif')
+        ->orderBy('deadline', 'asc')
+        ->get();
 
     if ($request->search) {
         $search = strtolower($request->search);
 
         $competitions = $competitions->filter(function ($competition) use ($search) {
-            return str_contains(strtolower($competition['title']), $search)
-                || str_contains(strtolower($competition['organizer']), $search)
-                || str_contains(strtolower($competition['category']), $search);
+            return str_contains(strtolower($competition->title), $search)
+                || str_contains(strtolower($competition->organizer ?? ''), $search)
+                || str_contains(strtolower($competition->category->name ?? ''), $search);
         });
     }
 
     if ($request->categories) {
         $competitions = $competitions->filter(function ($competition) use ($request) {
-            return in_array($competition['category'], $request->categories);
+            return in_array($competition->category->name ?? '', $request->categories);
         });
     }
 
-   if ($request->prize) {
-    $competitions = $competitions->filter(function ($competition) use ($request) {
-        $topPrize = $competition['prizes'][0]['amount'] ?? 0;
-        return $topPrize >= (int) $request->prize;
-    });
-}
+    if ($request->prize) {
+        $competitions = $competitions->filter(function ($competition) use ($request) {
+            $prizeNumber = (int) preg_replace('/[^0-9]/', '', $competition->prize ?? '0');
+            return $prizeNumber >= (int) $request->prize;
+        });
+    }
 
-$competitions = $competitions->sortBy('deadline')->values();
-
-$categories = collect(
-        require resource_path('data/competitions.php')
-    )->pluck('category')->unique()->values();
+    $categories = \App\Models\Category::pluck('name')->values();
 
     return view('user.competitions.index', [
         'competitions' => $competitions,
@@ -119,15 +117,9 @@ $categories = collect(
     ]);
 }
 
-    public function show($id) {
-        $competitions = require resource_path('data/competitions.php');
+public function show($id) {
+    $competition = Competition::with('category')->findOrFail($id);
 
-        $competition = collect($competitions)->firstWhere('id', (int) $id);
-
-        if (!$competition) {
-            abort(404);
-        }
-
-        return view('user.competitions.show', compact('competition'));
-    }
+    return view('user.competitions.show', compact('competition'));
+}
 }
