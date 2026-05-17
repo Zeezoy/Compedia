@@ -1,42 +1,31 @@
-@extends('layouts.admin')
-@section('content')
 
-<div class="flex justify-between">
-    <h1 class="text-3xl font-semibold text-[#DEB8FF]">New Competitions</h1>
-    <x-button href="">    
-        Publish
-    </x-button>
-</div>
 <div class="flex gap-6 items-start">
     <div class="flex-1 space-y-6">
         <x-card-section title="Overview & Description">
             <div class="space-y-5">
                 <x-dropdown-filter
                     placeholder="Categories"
-                    :options="[
-                        'Web Dev',
-                        'Mobile Dev',
-                        'UI/UX',
-                        'Data Science',
-                        'Cyber Security'
-                    ]"
+                    name="category_id"
+                    :options="$categories->pluck('name', 'id')"
+                    :selected="old('category_id', $competition->category_id ?? '')"
+                    :value="old('category_id', $competition->category_id ?? '')"
                 />
                 <x-input
                     label="Competition Title"
                     name="title"
-                    :value="$competition['title'] ?? ''"
+                    :value="old('title', $competition->title ?? '')"
                     placeholder="e.g. Hology 8.0"
                 />
                 <x-input
                     label="Organizer"
                     name="organizer"
-                    :value="$competition['organizer'] ?? ''"
+                    :value="old('organizer', $competition->organizer ?? '')"
                     placeholder="e.g. FILKOM UB"
                 />
                 <x-textarea
                     label="Full Description"
                     name="description"
-                    :value="$competition['description'] ?? ''"
+                    :value="old('description', $competition->description ?? '')"
                     placeholder="Detail the challenge, goals, and technical requirements..."
                 />
             </div>
@@ -44,7 +33,7 @@
 
         <x-card-section title="Rules & Regulations" action="+ Add Rule" actionId="add-rule-btn">
             <div id="rules-container" class="space-y-3">
-                @foreach($competition['rules'] ?? [] as $index => $rule)    
+                @foreach($competition->rules ?? [] as $index => $rule)   
                     <div class="bg-[#1E2021] rounded-lg border border-white/20 focus:border-[#9747FF] p-4 flex gap-4 rule-item">
                         <span class="text-white rule-number">
                             {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}
@@ -60,7 +49,7 @@
                                 outline-none
                                 resize-y
                             "
-                        >{{ $rule }}</textarea>
+                        >{{ $rule->rule }}</textarea>
                     </div>
                 @endforeach
             </div>
@@ -68,11 +57,19 @@
 
         <x-card-section title="Timeline Builder" action="+ Add Stage" actionId="add-stage-btn">
             <div id="timeline-container" class="space-y-6">
-                <x-timeline-stage
-                    title="Registration Open"
-                    startDate="10/01/2024"
-                    endDate="10/30/2024"
-                />
+                @forelse($competition->stages ?? [] as $stage)
+                    <x-timeline-stage
+                        :title="$stage->title"
+                        :startDate="$stage->start_date"
+                        :endDate="$stage->end_date"
+                    />
+                @empty
+                    <x-timeline-stage
+                        title=""
+                        startDate=""
+                        endDate=""
+                    />
+                @endforelse
             </div>
         </x-card-section>
     </div>
@@ -85,6 +82,7 @@
                     type="file"
                     id="competition-image"
                     accept="image/*"
+                    name="photo_url"
                     class="hidden"
                 >
                 <label
@@ -104,24 +102,23 @@
                         id="image-preview"
                         class="hidden absolute inset-0 w-full h-full object-cover"
                     >
-                    <p
-                        id="upload-placeholder"
-                        class="text-sm text-white/40"
-                    >
-                        Upload Image
-                    </p>
+                    @if($competition->photo_url)
+                        <img src="{{ asset('storage/' . $competition->photo_url) }}" class="absolute inset-0 w-full h-full object-cover"/>
+                    @else
+                        <p id="upload-placeholder" class="text-white">Upload Image</p>
+                    @endif
                 </label>
             </div>
         </x-card-section>
 
         <x-card-section title="Prize Pool" action="+ Add Prize" actionId="add-prize-btn">
             <div id="prize-container" class="space-y-3">
-                @foreach($competition['prizes'] ?? [] as $prize)
+                @foreach($competition->prizes ?? [] as $prize)
                     <div class="flex gap-3 prize-item">
                         <input
                             type="text"
                             name="prize_title[]"
-                            value="{{ $prize['title'] }}"
+                            value="{{ old('prize_title.' . $loop->index, $prize->title ?? '') }}"
                             placeholder="1st"
                             class="
                                 w-20
@@ -138,7 +135,7 @@
                             type="number"
                             name="prize_amount[]"
                             placeholder="Amount (Rp)"
-                            value="{{ $prize['amount'] }}"
+                            value="{{ old('prize_amount.' . $loop->index, $prize->amount ?? '') }}"
                             class="
                                 w-40
                                 bg-[#1E2021]
@@ -160,6 +157,7 @@
                 <x-input
                     label="Registration Link"
                     name="registration_link"
+                    :value="old('registration_link', $competition->registration_link ?? '')"
                     type="url"
                     placeholder="https://..."
                 />
@@ -167,12 +165,14 @@
                     label="Guidebook Link"
                     name="guidebook_link"
                     type="url"
+                    :value="old('guidebook_link', $competition->guidebook_link ?? '')"
                     placeholder="https://..."
                 />
                 <x-input
                     label="Registration Fee (Rp)"
                     name="registration_fee"
                     type="number"
+                    :value="old('registration_fee', $competition->registration_fee ?? '')"
                     placeholder="50000"
                 />
             </div>
@@ -183,7 +183,7 @@
                 <x-toggle
                     label="Public Visibility"
                     name="is_public"
-                    checked="true"
+                    :checked="old('is_public', $competition->is_public ?? true)"
                 />
             </div>
         </x-card-section>
@@ -253,4 +253,3 @@
     </div>
 </template>
 
-@endsection

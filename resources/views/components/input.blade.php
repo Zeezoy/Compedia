@@ -1,3 +1,11 @@
+@props([
+    'name' => '',
+    'type' => 'text',
+    'label' => '',
+    'placeholder' => '',
+    'value' => '',
+])
+
 <div>
     <label class="font-medium text-white mb-3 block">
         {{ $label }}
@@ -6,6 +14,7 @@
     <input
         type="{{ $type ?? 'text' }}"
         placeholder="{{ $placeholder ?? '' }}"
+        name="{{ $name }}"
         value="{{ $value ?? '' }}"
         {{ $attributes->merge([
                 'class' => '

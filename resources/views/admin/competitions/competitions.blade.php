@@ -3,7 +3,7 @@
 
 <div class="flex justify-between">
     <h1 class="text-3xl font-semibold text-[#DEB8FF]">Manage Competitions</h1>
-    <x-button href="{{ route('competitions.create') }}">
+    <x-button onclick="window.location.href='/admin/competitions/create'">
         <x-bx-plus class="w-6 h-6"/>    
         New Competition
     </x-button>
@@ -12,21 +12,21 @@
 <div class="flex gap-11">
     <x-stat-card
         title="Active Now"
-        value="12"
+        :value="$openCompetitions"
         growth=""
     >
         <x-bx-pulse class="w-10 h-10"/>
     </x-stat-card>
     <x-stat-card
         title="Total Competitions"
-        value="12"
+        :value="$totalCompetitions"
         growth="+8.5% from last month"
     >
         <x-bx-bullseye class="w-10 h-10"/>
     </x-stat-card>
     <x-stat-card
         title="Up Coming"
-        value="12"
+        :value="$upcomingCompetitions"
         growth=""
     >
         <x-bx-calendar-event class="w-10 h-10"/>
@@ -35,23 +35,26 @@
 
 <div>
     <x-table>
-        <form method="GET">
+        <form id="filter-form" method="GET">
             <div class="flex justify-end items-center gap-4 mb-6">
                 <x-dropdown-filter
                     name="category"
                     placeholder="All Categories"
-                    :options="$categories"
+                    :options="$categories->pluck('name', 'id')"
                     :selected="request('category')"
+                    data-filter="true"
                 />
                 <x-dropdown-filter
                     name="status"
                     placeholder="All Status"
                     :options="[
-                        'All',
-                        'Active',
-                        'Closed'
+                        'All' => 'All',
+                        'Upcoming' => 'Upcoming',
+                        'Active' => 'Active',
+                        'Closed' => 'Closed'
                     ]"
                     :selected="request('status')"
+                    data-filter="true"
                 />
             </div>
         </form>
@@ -68,35 +71,38 @@
             @foreach ($competitions as $competition)
             <tr class="border-b border-white/10">
                 <td class="py-4">
-                    {{ $competition['title'] }}
+                    {{ $competition->title }}
                 </td>
                 <td class="py-4">
-                    <x-badge>{{ $competition['category'] }}</x-badge>
+                    <x-badge>{{ $competition->category->name }}</x-badge>
                 </td>
                 <td class="py-4">
-                    {{ \Carbon\Carbon::parse($competition['deadline'])->format('M d, Y') }}
+                    {{ $competition->formatted_deadline }}
                 </td>
                 <td class="py-4">
-                    @php
-                        $isClosed =
-                            now()->gt($competition['deadline']);
-                    @endphp
+                    @php $status = $competition->status; @endphp
+
                     <span class="
-                        {{ $isClosed
-                            ? 'text-[#FFA5A7]'
-                            : 'text-[#C0FFC6]'
-                        }}
+                        px-3 py-1 rounded-full text-xs font-medium
+                        {{ $status === 'Active' ? 'text-[#C0FFC6]' : '' }}
+                        {{ $status === 'Upcoming' ? 'text-[#D3E5FF]' : '' }}
+                        {{ $status === 'Closed' ? 'text-[#FFA5A7]' : '' }}
                     ">
-                        {{ $isClosed ? 'Closed' : 'Active' }}
+                        {{ $status }}
                     </span>
                 </td>
                 <td class="py-4 flex items-center">
                     <a href="/admin/competitions/{{ $competition['id'] }}/edit" class="text-[#DEB8FF]">
                         <x-bx-pencil class="w-6 h-6"/>
                     </a>
-                    <a href="" class="ml-4 text-[#DEB8FF]">
-                        <x-bx-trash class="w-6 h-6"/>
-                    </a>
+                    <form action="{{ route('competitions.destroy', $competition->id) }}" method="POST" onsubmit="return confirm('Delete this competition?')">
+                        @csrf
+                        @method('DELETE')
+
+                        <button type="submit" class="ml-4 text-[#DEB8FF]">
+                            <x-bx-trash class="w-6 h-6"/>
+                        </button>
+                    </form>
                 </td>
             </tr>
             @endforeach

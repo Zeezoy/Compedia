@@ -15,11 +15,15 @@
                 </h1>
                 <div class="flex items-center gap-5">
                     <div class="relative">
-                        <input
-                            type="text"
-                            placeholder="Search competition . . ."
-                            class="bg-transparent border border-white/10 rounded-xl px-4 py-2 text-sm outline-none focus:border-[#A855F7] text-white placeholder:text-white/50"
-                        >
+                        <form method="GET" action="{{ url('/admin/competitions') }}">
+                            <input
+                                type="text"
+                                name="search"
+                                value="{{ request('search') }}"
+                                placeholder="Search competition . . ."
+                                class="bg-transparent border border-white/10 rounded-xl px-4 py-2 text-sm outline-none focus:border-[#A855F7] text-white placeholder:text-white/50"
+                            >
+                        </form>
                     </div>
                     <div class="w-10 h-10 rounded-full bg-white"></div>
                 </div>

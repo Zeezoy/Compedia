@@ -5,14 +5,14 @@
 <div class="flex gap-11">
      <x-stat-card
         title="Total Users"
-        value="12"
+        :value="$totalUsers"
         growth="+8.5% from last month"
     >
         <x-bx-user-plus class="w-10 h-10"/>
     </x-stat-card>
     <x-stat-card
         title="Total Competitions"
-        value="12"
+        :value="$totalCompetitions"
         growth="+8.5% from last month"
     >
         <x-bx-bullseye class="w-10 h-10"/>
@@ -26,8 +26,8 @@
         chartId="competitionTrendChart"
         type="bar"
         datasetLabel="Competitions"
-        :labels="['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']"
-        :data="[10, 20, 15, 25, 30, 40]"
+        :labels="$labels"
+        :data="$data"
     />
 </div>
 
@@ -43,29 +43,27 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($competitions as $competition)
+            @foreach ($recentCompetitions as $competition)
             <tr class="border-b border-white/10">
                 <td class="py-4">
-                    {{ $competition['title'] }}
+                    {{ $competition->title }}
                 </td>
                 <td class="py-4">
-                    <x-badge>{{ $competition['category'] }}</x-badge>
+                    <x-badge>{{ $competition->category->name }}</x-badge>
                 </td>
                 <td class="py-4">
-                    {{ \Carbon\Carbon::parse($competition['deadline'])->format('M d, Y') }}
+                    {{ $competition->formatted_deadline }}
                 </td>
                 <td class="py-4">
-                    @php
-                        $isClosed =
-                            now()->gt($competition['deadline']);
-                    @endphp
+                    @php $status = $competition->status; @endphp
+
                     <span class="
-                        {{ $isClosed
-                            ? 'text-[#FFA5A7]'
-                            : 'text-[#C0FFC6]'
-                        }}
+                        px-3 py-1 rounded-full text-xs font-medium
+                        {{ $status === 'Active' ? 'text-[#C0FFC6]' : '' }}
+                        {{ $status === 'Upcoming' ? 'text-[#D3E5FF]' : '' }}
+                        {{ $status === 'Closed' ? 'text-[#FFA5A7]' : '' }}
                     ">
-                        {{ $isClosed ? 'Closed' : 'Active' }}
+                        {{ $status }}
                     </span>
                 </td>
                 <td class="py-4 flex items-center">
