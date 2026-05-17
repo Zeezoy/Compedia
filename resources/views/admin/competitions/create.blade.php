@@ -6,7 +6,7 @@
     @csrf
     
     <div class="flex justify-between mb-12">
-        <h1 class="text-3xl font-semibold text-[#DEB8FF]">New Competitions</h1>
+        <h1 class="text-2xl md:text-3xl font-semibold text-[#DEB8FF]">New Competitions</h1>
 
         <x-button type="submit">
             Publish

@@ -2,7 +2,7 @@
 @section('title', 'Admin Dashboard')
 @section('content')
 
-<div class="flex gap-11">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-11">
      <x-stat-card
         title="Total Users"
         :value="$totalUsers"
@@ -19,7 +19,7 @@
     </x-stat-card>
 </div>
 
-<div>
+<div class="w-full overflow-x-auto">
     <x-chart
         title="Competition Trend"
         description="Total Competitions / month"
@@ -31,7 +31,7 @@
     />
 </div>
 
-<div>
+<div class="overflow-x-auto">
     <x-table title="Review Competitions" action="View All">
         <thead>
             <tr class="text-left text-sm text-[#D9D9D9] border-b border-white/10">

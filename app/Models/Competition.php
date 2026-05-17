@@ -56,12 +56,19 @@ class Competition extends Model
 
     public function getStatusAttribute()
     {
-        if ($this->deadline < now()) {
-            return 'Closed';
+        $startDate = $this->stages->min('start_date');
+        $deadline = $this->deadline;
+
+        if (!$startDate || !$deadline) {
+            return 'Upcoming';
         }
 
-        if ($this->stages()->min('start_date') > now()) {
+        if (now()->lt($startDate)) {
             return 'Upcoming';
+        }
+
+        if (now()->gt($deadline)) {
+            return 'Closed';
         }
 
         return 'Active';

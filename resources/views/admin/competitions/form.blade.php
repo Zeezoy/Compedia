@@ -1,6 +1,5 @@
-
-<div class="flex gap-6 items-start">
-    <div class="flex-1 space-y-6">
+<div class="flex flex-col xl:flex-row gap-6 items-start">
+    <div class="flex-1 w-full space-y-6">
         <x-card-section title="Overview & Description">
             <div class="space-y-5">
                 <x-dropdown-filter
@@ -31,11 +30,25 @@
             </div>
         </x-card-section>
 
-        <x-card-section title="Rules & Regulations" action="+ Add Rule" actionId="add-rule-btn">
+        <x-card-section
+            title="Rules & Regulations"
+            action="+ Add Rule"
+            actionId="add-rule-btn"
+        >
             <div id="rules-container" class="space-y-3">
-                @foreach($competition->rules ?? [] as $index => $rule)   
-                    <div class="bg-[#1E2021] rounded-lg border border-white/20 focus:border-[#9747FF] p-4 flex gap-4 rule-item">
-                        <span class="text-white rule-number">
+                @foreach($competition->rules ?? [] as $index => $rule)
+                    <div
+                        class="
+                            bg-[#1E2021]
+                            rounded-lg
+                            border border-white/20
+                            focus:border-[#9747FF]
+                            p-4
+                            flex items-start gap-3
+                            rule-item
+                        "
+                    >
+                        <span class="text-white rule-number shrink-0">
                             {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}
                         </span>
 
@@ -55,8 +68,12 @@
             </div>
         </x-card-section>
 
-        <x-card-section title="Timeline Builder" action="+ Add Stage" actionId="add-stage-btn">
-            <div id="timeline-container" class="space-y-6">
+        <x-card-section
+            title="Timeline Builder"
+            action="+ Add Stage"
+            actionId="add-stage-btn"
+        >
+            <div id="timeline-container" class="space-y-4 md:space-y-6">
                 @forelse($competition->stages ?? [] as $stage)
                     <x-timeline-stage
                         :title="$stage->title"
@@ -74,8 +91,14 @@
         </x-card-section>
     </div>
 
-    {{-- RIGHT --}}
-    <div class="w-[320px] space-y-6 sticky top-6">
+    <div
+        class="
+            w-full
+            xl:w-[320px]
+            space-y-6
+            xl:sticky xl:top-6
+        "
+    >
         <x-card-section title="Branding">
             <div class="space-y-5">
                 <input
@@ -88,7 +111,7 @@
                 <label
                     for="competition-image"
                     class="
-                        h-36
+                        h-40 sm:h-48
                         rounded-xl
                         border border-dashed border-white/10
                         bg-[#18191D]
@@ -103,25 +126,37 @@
                         class="hidden absolute inset-0 w-full h-full object-cover"
                     >
                     @if($competition->photo_url)
-                        <img src="{{ asset('storage/' . $competition->photo_url) }}" class="absolute inset-0 w-full h-full object-cover"/>
+                        <img
+                            src="{{ Str::startsWith($competition->photo_url, ['http://', 'https://'])
+                                ? $competition->photo_url
+                                : asset('storage/' . $competition->photo_url)
+                            }}"
+                            class="absolute inset-0 w-full h-full object-cover"
+                        />
                     @else
-                        <p id="upload-placeholder" class="text-white">Upload Image</p>
+                        <p id="upload-placeholder" class="text-white">
+                            Upload Image
+                        </p>
                     @endif
                 </label>
             </div>
         </x-card-section>
 
-        <x-card-section title="Prize Pool" action="+ Add Prize" actionId="add-prize-btn">
+        <x-card-section
+            title="Prize Pool"
+            action="+ Add Prize"
+            actionId="add-prize-btn"
+        >
             <div id="prize-container" class="space-y-3">
                 @foreach($competition->prizes ?? [] as $prize)
-                    <div class="flex gap-3 prize-item">
+                    <div class="flex flex-col sm:flex-row gap-3 prize-item">
                         <input
                             type="text"
                             name="prize_title[]"
                             value="{{ old('prize_title.' . $loop->index, $prize->title ?? '') }}"
                             placeholder="1st"
                             class="
-                                w-20
+                                w-full sm:w-20
                                 bg-[#1E2021]
                                 border border-white/20
                                 rounded-lg
@@ -137,7 +172,7 @@
                             placeholder="Amount (Rp)"
                             value="{{ old('prize_amount.' . $loop->index, $prize->amount ?? '') }}"
                             class="
-                                w-40
+                                w-full sm:flex-1
                                 bg-[#1E2021]
                                 border border-white/20
                                 rounded-lg
@@ -153,7 +188,7 @@
         </x-card-section>
 
         <x-card-section title="Registration Details">
-            <div class="grid grid-cols-1 gap-5">
+            <div class="grid grid-cols-1 gap-4 sm:gap-5">
                 <x-input
                     label="Registration Link"
                     name="registration_link"
@@ -191,8 +226,18 @@
 </div>
 
 <template id="rule-template">
-    <div class="bg-[#1E2021] rounded-lg border border-white/20 focus:border-[#9747FF] p-4 flex gap-4 rule-item">
-        <span class="text-white rule-number">
+    <div
+        class="
+            bg-[#1E2021]
+            rounded-lg
+            border border-white/20
+            focus:border-[#9747FF]
+            p-4
+            flex items-start gap-3
+            rule-item
+        "
+    >
+        <span class="text-white rule-number shrink-0">
             0
         </span>
 
@@ -211,34 +256,36 @@
 </template>
 
 <template id="prize-template">
-    <div class="flex gap-3 prize-item">
+    <div class="flex flex-col sm:flex-row gap-3 prize-item">
         <input
             type="text"
             name="prize_title[]"
             placeholder="1st"
             class="
-                w-20
+                w-full sm:w-20
                 bg-[#1E2021]
                 border border-white/20
                 rounded-lg
                 p-4
                 text-white
                 outline-none
-                focus:border-[#9747FF]"
+                focus:border-[#9747FF]
+            "
         >
         <input
             type="number"
             name="prize_amount[]"
             placeholder="Amount (Rp)"
             class="
-                w-40
+                w-full sm:flex-1
                 bg-[#1E2021]
                 border border-white/20
                 rounded-lg
                 p-4
                 text-white
                 outline-none
-                focus:border-[#9747FF]"
+                focus:border-[#9747FF]
+            "
         >
     </div>
 </template>
@@ -252,4 +299,3 @@
         />
     </div>
 </template>
-

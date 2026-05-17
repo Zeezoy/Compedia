@@ -25,7 +25,15 @@ class CompetitionsController extends Controller {
             }
 
             if ($request->status === 'Active') {
-                $query->where('deadline', '>=', now());
+                $query->whereHas('stages', function ($q) {
+                    $q->whereRaw('start_date = (
+                        SELECT MIN(start_date)
+                        FROM competition_stages
+                        WHERE competition_stages.competition_id = competitions.id
+                    )')
+                    ->where('start_date', '<=', now());
+                })
+                ->where('deadline', '>=', now());
             }
 
             if ($request->status === 'Upcoming') {
@@ -51,7 +59,16 @@ class CompetitionsController extends Controller {
 
         $categories = Category::all();
 
-        $openCompetitions = Competition::where('deadline', '>=', now())->count();
+        $openCompetitions = Competition::whereHas('stages', function ($q) {
+            $q->whereRaw('start_date = (
+                SELECT MIN(start_date)
+                FROM competition_stages
+                WHERE competition_stages.competition_id = competitions.id
+            )')
+            ->where('start_date', '<=', now());
+        })
+        ->where('deadline', '>=', now())
+        ->count();
 
         $totalCompetitions = Competition::count();
 

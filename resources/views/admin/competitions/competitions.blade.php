@@ -1,15 +1,15 @@
 @extends('layouts.admin')
 @section('content')
 
-<div class="flex justify-between">
-    <h1 class="text-3xl font-semibold text-[#DEB8FF]">Manage Competitions</h1>
+<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <h1 class="text-2xl md:text-3xl font-semibold text-[#DEB8FF]">Manage Competitions</h1>
     <x-button onclick="window.location.href='/admin/competitions/create'">
         <x-bx-plus class="w-6 h-6"/>    
         New Competition
     </x-button>
 </div>
 
-<div class="flex gap-11">
+<div class="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-6 md:gap-11">
     <x-stat-card
         title="Active Now"
         :value="$openCompetitions"
