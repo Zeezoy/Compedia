@@ -30,7 +30,8 @@ Route::get('/register', [AuthController::class, 'showRegister'])->name('register
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/competition', [HomeController::class, 'competition'])->name('competition');
+Route::get('/competitions', [CompetitionsController::class, 'publicIndex'])->name('public.competitions.index');
+Route::get('/competitions/{id}', [CompetitionsController::class, 'show'])->name('public.competitions.show');
 
 // Profile (protected)
 Route::middleware('auth')->group(function () {

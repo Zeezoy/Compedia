@@ -159,13 +159,13 @@ class CompetitionsController extends Controller {
             ]);
         }
 
-        $lastStage = CompetitionStage::where('competition_id', $competition->id)
-            ->orderBy('end_date', 'desc')
+        $firstStage = CompetitionStage::where('competition_id', $competition->id)
+            ->orderBy('start_date', 'asc')
             ->first();
 
-        if ($lastStage) {
+        if ($firstStage) {
             $competition->update([
-                'deadline' => $lastStage->end_date
+                'deadline' => $firstStage->end_date
             ]);
         }
         
@@ -175,8 +175,9 @@ class CompetitionsController extends Controller {
     }
 
 public function publicIndex(Request $request) {
-    $competitions = Competition::with('category')
-        ->where('status', 'aktif')
+    $competitions = Competition::with(['category', 'prizes'])
+        ->where('is_public', true)
+        ->where('deadline', '>=', now())
         ->orderBy('deadline', 'asc')
         ->get();
 
@@ -198,30 +199,30 @@ public function publicIndex(Request $request) {
 
     if ($request->prize) {
         $competitions = $competitions->filter(function ($competition) use ($request) {
-            $prizeNumber = (int) preg_replace('/[^0-9]/', '', $competition->prize ?? '0');
-            return $prizeNumber >= (int) $request->prize;
+            $totalPrize = $competition->prizes->sum('amount');
+            return $totalPrize >= (int) $request->prize;
         });
     }
 
     $competitions = $competitions->sortBy('deadline')->values();
 
-$perPage = 4;
-$currentPage = LengthAwarePaginator::resolveCurrentPage();
+    $perPage = 4;
+    $currentPage = LengthAwarePaginator::resolveCurrentPage();
 
-$currentItems = $competitions
-    ->slice(($currentPage - 1) * $perPage, $perPage)
-    ->values();
+    $currentItems = $competitions
+        ->slice(($currentPage - 1) * $perPage, $perPage)
+        ->values();
 
-$competitions = new LengthAwarePaginator(
-    $currentItems,
-    $competitions->count(),
-    $perPage,
-    $currentPage,
-    [
-        'path' => request()->url(),
-        'query' => request()->query(),
-    ]
-);
+    $competitions = new LengthAwarePaginator(
+        $currentItems,
+        $competitions->count(),
+        $perPage,
+        $currentPage,
+        [
+            'path' => request()->url(),
+            'query' => request()->query(),
+        ]
+    );
 
     $categories = \App\Models\Category::pluck('name')->values();
 
@@ -232,12 +233,22 @@ $competitions = new LengthAwarePaginator(
 }
 
 public function show($id) {
-    $competition = Competition::with('category')->findOrFail($id);
+    $competition = Competition::with([
+        'category',
+        'stages',
+        'rules',
+        'prizes'
+    ])->findOrFail($id);
+
+
 
     return view('user.competitions.show', compact('competition'));
 }
     public function update(Request $request, $id) {
-        $competition = Competition::findOrFail($id);
+        $competition = Competition::with([
+            'category',
+            'prizes'
+        ])->findOrFail($id);
         $photoPath = $competition->photo_url;
 
         if ($request->hasFile('photo_url')) {
@@ -292,13 +303,13 @@ public function show($id) {
             ]);
         }
 
-        $lastStage = CompetitionStage::where('competition_id', $competition->id)
-            ->orderBy('end_date', 'desc')
+        $firstStage = CompetitionStage::where('competition_id', $competition->id)
+            ->orderBy('start_date', 'asc')
             ->first();
 
-        if ($lastStage?->end_date) {
+        if ($firstStage?->end_date) {
             $competition->update([
-                'deadline' => $lastStage->end_date
+                'deadline' => $firstStage->end_date
             ]);
         }
 

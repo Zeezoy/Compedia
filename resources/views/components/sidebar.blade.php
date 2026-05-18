@@ -16,11 +16,13 @@
 >
 
     <div class="flex items-center md:justify-center justify-between mb-12 px-4">
-        <img
-            src="{{ asset('images/compedia-logo.svg') }}"
-            alt="Compedia Logo"
-            class="w-36"
-        >
+        <a href="{{ route('home') }}">
+            <img
+                src="{{ asset('images/compedia-logo.svg') }}"
+                alt="Compedia Logo"
+                class="w-36"
+            >
+        </a>
 
         <button
             class="md:hidden text-white text-2xl"

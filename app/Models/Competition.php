@@ -50,7 +50,7 @@ class Competition extends Model
     {
         return max(
             0,
-            now()->diffInDays($this->deadline)
+            (int) now()->diffInDays($this->deadline)
         );
     }
 

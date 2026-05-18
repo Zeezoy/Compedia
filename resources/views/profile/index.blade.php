@@ -37,9 +37,15 @@
                         class="bg-purple-600 hover:bg-purple-700 transition px-6 py-2 rounded-xl text-sm font-medium">
                         Edit Profile
                     </a>
-                    <span class="border border-white/10 px-6 py-2 rounded-xl text-sm text-white/50 capitalize">
-                        {{ $user->role }}
-                    </span>
+                    @if ($user->role === 'admin')
+                        <a href ='{{ route('admin.dashboard') }}' class="border border-white/10 px-6 py-2 rounded-xl text-sm text-white/50 capitalize">
+                            {{ $user->role }}
+                        </a>
+                    @else
+                        <a class="border border-white/10 px-6 py-2 rounded-xl text-sm text-white/50 capitalize">
+                            {{ $user->role }}
+                        </a>
+                    @endif
                 </div>
             </div>
 

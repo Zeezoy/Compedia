@@ -9,58 +9,11 @@
 </head>
 
 <body class="bg-[#16111B] text-[#EADFED] min-h-screen font-[Inter]">
-<header class="h-[78px] border-b border-white/10 bg-[#16111B] flex items-center px-6 md:px-8 lg:sticky lg:top-0 lg:z-50">
-    <div class="w-full flex items-center justify-between">
-        <a href="/" class="flex items-center gap-3">
-            <svg class="w-6 h-6 text-[#DEB8FF]" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M7 3h10v3h4v2.5A5.5 5.5 0 0 1 15.5 14H15v2h3v2H6v-2h3v-2h-.5A5.5 5.5 0 0 1 3 8.5V6h4V3Zm2 2v5a3 3 0 0 0 6 0V5H9ZM5 8v.5A3.5 3.5 0 0 0 8.5 12h.1A5.4 5.4 0 0 1 7 8V8H5Zm12 0a5.4 5.4 0 0 1-1.6 4h.1A3.5 3.5 0 0 0 19 8.5V8h-2Zm-6 6v2h2v-2h-2Z"/>
-            </svg>
-            <h1 class="text-3xl font-extrabold text-[#EADFED]">Compedia</h1>
-        </a>
 
-        <nav class="hidden md:flex items-center gap-14 text-sm">
-            <a href="/" class="text-[#CFC2D6]">Discover</a>
-            <a href="{{ route('public.competitions.index') }}" class="text-[#DEB8FF] border-b-2 border-[#DEB8FF] pb-2">Competitions</a>
-        </nav>
+<x-navbar/>
 
-    @auth
-    <div class="flex items-center gap-4">
-        <a href="{{ route('profile') }}" class="w-11 h-11 rounded-full overflow-hidden bg-[#9747FF] flex items-center justify-center">
-            @if(Auth::user()->avatar_url)
-                <img 
-                    src="{{ Storage::url(Auth::user()->avatar_url) }}" 
-                    alt="Profile"
-                    class="w-full h-full object-cover"
-                >
-            @else
-                <span class="text-white font-extrabold">
-                    {{ strtoupper(substr(Auth::user()->full_name ?? Auth::user()->name ?? 'U', 0, 1)) }}
-                </span>
-            @endif
-        </a>
-
-        <span class="hidden md:block text-[#CFC2D6]">
-            {{ Auth::user()->username ?? Auth::user()->full_name }}
-        </span>
-
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="text-[#CFC2D6] hover:text-[#EADFED]">
-                Logout
-            </button>
-        </form>
-    </div>
-@endauth
-
-@guest
-    <a href="{{ route('login') }}" class="bg-[#9747FF] px-6 md:px-7 py-3 rounded-xl text-sm font-bold text-[#400071]">
-        Sign In
-    </a>
-@endguest
-    </div>
-</header>
-
-<main class="flex flex-col lg:flex-row">    <aside class="w-full lg:w-[320px] bg-[#1F1A23] border-r border-white/10 px-6 py-8 shrink-0 lg:sticky lg:top-[78px] lg:h-[calc(100vh-78px)] lg:overflow-y-auto">
+<main class="flex flex-col lg:flex-row">    
+    <aside class="w-full lg:w-[320px] bg-[#1F1A23] border-r border-white/10 px-6 py-8 shrink-0 lg:sticky lg:top-[78px] lg:h-[calc(100vh-78px)] lg:overflow-y-auto">
         <form method="GET">
             <div class="relative mb-10">
                 <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#CFC2D6]">
@@ -114,8 +67,8 @@
                                 <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="4" viewBox="0 0 24 24">
                                     <path d="M5 13l4 4L19 7"></path>
                                 </svg>
-    @endif
-</span>
+                            @endif
+                        </span>
                         </span>
                         <span>{{ $category }}</span>
                     </label>
@@ -172,8 +125,12 @@
 
                     <article class="bg-white/[0.03] border border-white/10 rounded-xl overflow-hidden min-h-[430px] flex flex-col">
                         <div class="relative h-[190px] bg-[#39323D]">
-                            @if(isset($competition->poster_url))
-                                <img src="{{ $competition->poster_url }}" class="w-full h-full object-cover" alt="{{ $competition->title }}">
+                            @if(isset($competition->photo_url))
+                                <img src="{{
+                                    Str::startsWith($competition->photo_url, ['http://', 'https://'])
+                                        ? $competition->photo_url
+                                        : asset('storage/' . $competition->photo_url)
+                                }}" class="w-full h-full object-cover" alt="{{ $competition->title }}">
                             @else
                                 <div class="w-full h-full bg-gradient-to-br from-[#391433] via-[#84301A] to-[#F97316]"></div>
                             @endif
@@ -203,14 +160,13 @@
                                 <div>
                                     <p class="text-[11px] tracking-[0.18em] font-bold text-[#CFC2D6]">PRIZE POOL</p>
                                     <p class="text-[#DEB8FF]">
-                                        {{ $competition->prize }}
+                                        Rp {{ number_format($competition->prizes->sum('amount'), 0, ',', '.') }}
                                     </p>
                                 </div>
 
-                                <a href="{{ route('public.competitions.show', $competition->id) }}"
-                                   class="bg-[#9747FF] hover:bg-[#8b35ff] transition w-[190px] text-center py-3 rounded-lg font-extrabold text-[#400071]">
+                                <x-button onclick="window.location.href='/competitions/{{ $competition->id }}'">
                                     View Details
-                                </a>
+                                </x-button>
                             </div>
                         </div>
                     </article>
@@ -243,19 +199,7 @@
     </section>
 </main>
 
-<footer class="bg-[#100B14] border-t border-white/10 px-6 md:px-8 py-8 flex flex-col md:flex-row justify-between gap-6 text-sm text-[#CFC2D6]">
-    <div>
-        <h3 class="font-bold text-[#EADFED]">Compedia</h3>
-        <p>© 2024 Compedia Platform. High-Performance Discovery.</p>
-    </div>
-
-    <div class="flex gap-8 flex-wrap">
-        <a href="#">About</a>
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms of Service</a>
-        <a href="#">Contact Support</a>
-    </div>
-</footer>
+<x-footer/>
 
 </body>
 </html>

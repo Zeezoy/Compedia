@@ -9,8 +9,11 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $competitions = Competition::latest()
-            ->take(3)
+        
+        $competitions = Competition::with(['category', 'prizes'])
+            ->where('is_public', true)
+            ->where('deadline', '>=', now())
+            ->orderBy('deadline', 'asc')
             ->get();
 
         $categories = Category::pluck('name');

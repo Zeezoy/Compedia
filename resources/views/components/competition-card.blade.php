@@ -1,6 +1,16 @@
 <div class="bg-[#12091D] border border-white/10 rounded-3xl overflow-hidden hover:border-purple-500/40 hover:shadow-[0_0_30px_rgba(168,85,247,0.15)] transition duration-300 hover:-translate-y-1 h-full">
 
-    <div class="h-44 bg-gradient-to-br from-purple-700 to-black }}"></div>
+    <div class="h-44 bg-gradient-to-br from-purple-700 to-black }}">
+        @if(isset($competition->photo_url))
+            <img src="{{
+                Str::startsWith($competition->photo_url, ['http://', 'https://'])
+                    ? $competition->photo_url
+                    : asset('storage/' . $competition->photo_url)
+            }}" class="w-full h-full object-cover" alt="{{ $competition->title }}">
+        @else
+            <div class="w-full h-full bg-gradient-to-br from-purple-700 to-black"></div>
+        @endif
+    </div>
 
     <div class="p-6 flex flex-col gap-5">
 
@@ -32,11 +42,11 @@
                 </div>
 
                 <div class="text-2xl font-bold">
-                    {{ $competition->prize }}
+                    Rp {{ number_format($competition->prizes->sum('amount'), 0, ',', '.') }}
                 </div>
             </div>
 
-            <button class="bg-purple-600 hover:bg-purple-700 transition px-5 py-3 rounded-xl text-sm font-medium">
+            <button onclick="window.location.href = '{{ route('public.competitions.show', $competition->id) }}'" class="bg-purple-600 hover:bg-purple-700 transition px-5 py-3 rounded-xl text-sm font-medium">
                 View Details
             </button>
 
