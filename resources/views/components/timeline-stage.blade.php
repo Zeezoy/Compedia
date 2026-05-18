@@ -1,3 +1,5 @@
+@props(['title' => '', 'startDate' => '', 'endDate' => ''])
+
 <div class="flex gap-4">
     <div class="flex flex-col items-center">
         <div class="w-3 h-3 rounded-full bg-[#DEB8FF]"></div>
@@ -9,13 +11,14 @@
             <x-input
                 label="Stage Title"
                 name="stage_title[]"
-                :placeholder="$title"
+                placeholder="Registration 1"
+                :value="$title"
             />
             <x-input
                 label="Start Date"
                 name="stage_start[]"
                 type="date"
-                :value="$startDate"
+                :value="$startDate ? \Carbon\Carbon::parse($startDate)->format('Y-m-d') : ''"
             />
         </div>
 
@@ -24,7 +27,7 @@
                 label="End Date"
                 name="stage_end[]"
                 type="date"
-                :value="$endDate"
+                :value="$endDate ? \Carbon\Carbon::parse($endDate)->format('Y-m-d') : ''"
             />
         </div>
     </div>

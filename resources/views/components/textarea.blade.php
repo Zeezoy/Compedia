@@ -1,3 +1,5 @@
+@props(['name' => '', 'label' => '', 'value' => '', 'placeholder' => ''])
+
 <div>
     <label class="font-medium text-white mb-3 block">
         {{ $label }}
@@ -6,6 +8,7 @@
     <textarea
         rows="5"
         placeholder="{{ $placeholder }}"
+        name="{{ $name }}"
         class="
             w-full
             bg-[#1E2021]
@@ -17,6 +20,6 @@
             resize-none
             focus:border-[#9747FF]
         "
-    ></textarea>
+    >{{ old($name, $value) }}</textarea>
 
 </div>
