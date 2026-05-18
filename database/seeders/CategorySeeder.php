@@ -9,7 +9,7 @@ class CategorySeeder extends Seeder
 {
     public function run(): void
     {
-        $categories = [
+        $category = [
             'Competitive Programming',
             'UI/UX Design',
             'Software Development',
@@ -20,10 +20,10 @@ class CategorySeeder extends Seeder
             'Hackathon',
         ];
 
-        foreach ($categories as $category) {
+        foreach ($category as $cat) {
 
             Category::create([
-                'name' => $category
+                'name' => $cat
             ]);
 
         }

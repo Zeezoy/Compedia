@@ -13,21 +13,11 @@ dropdowns.forEach(dropdown => {
 
     options.forEach(option => {
         option.addEventListener('click', () => {
-            const value = option.dataset.value
-            selected.textContent = value
-            input.value = value
+            input.value = option.dataset.value
+            selected.textContent = option.textContent
             menu.classList.add('hidden')
-            const form = dropdown.closest('form')
-            
-            if (form) {
-                form.submit()
-            }
-        })
-    })
 
-    document.addEventListener('click', (e) => {
-        if (!dropdown.contains(e.target)) {
-            menu.classList.add('hidden')
-        }
+            document.getElementById('filter-form').submit()
+        })
     })
 })
